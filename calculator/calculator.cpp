@@ -60,6 +60,17 @@ double get_valid_input()
 	return number;
 }
 
+char get_valid_operation()
+{
+	char op;
+	while (op == 'q' || op == 'r')
+	{
+		cin >> op;
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	}
+	return op;
+}
+
 void handle_quit()
 {
 	cout << "Exit " << "\n";
@@ -73,16 +84,18 @@ void handle_reset()
 	cin.clear();
 	cout << "Please enter the first number: " << "\n";
 	num1 = get_valid_input();
+	result = num1;
+	first_cal = true;
 }
 
-bool Is_quit(double num1, double num2, char operation)
+bool Is_quit(char operation)
 {
-	return operation == 'q' || num1 == 'q' || num2 == 'q';
+	return operation == 'q';
 }
 
-bool Is_reset(double num1, double num2, char operation)
+bool Is_reset(char operation)
 {
-	return operation == 'r' || num1 == 'r' || num2 == 'r';
+	return operation == 'r';
 }
 
 void handle_cal(double num1, double num2, char operation, double &result)
@@ -94,7 +107,7 @@ void handle_cal(double num1, double num2, char operation, double &result)
 		{'/', divide},
 		{'^', exp},
 		{'%', modula}};
-	if (operation == '/' && num2 == 0)
+	if (operation == '/' || operation == '%' && num2 == 0)
 	{
 
 		cout << "Error: Can not divide 0." << "\n";
@@ -110,6 +123,7 @@ void handle_cal(double num1, double num2, char operation, double &result)
 	}
 	else
 	{
+
 		cout << "Error: Invalid operation." << "\n";
 	}
 }
@@ -123,6 +137,7 @@ int main()
 		{
 			cout << "Please enter the first number: " << "\n";
 			num1 = get_valid_input();
+			result = num1;
 		}
 
 		else
@@ -131,29 +146,29 @@ int main()
 
 			num1 = result;
 		}
-		cout << "Please enter the operator (q to exit or r to reset): " << "\n";
-		cin >> operation;
 
-		if (Is_quit(num1, num2, operation))
+		while (true)
 		{
-			handle_quit();
-		}
-		else if (Is_reset(num1, num2, operation))
-		{
-			handle_reset();
-			continue;
-		}
+			cout << "Please enter the operator (q to exit or r to reset): " << "\n";
+			operation = get_valid_operation();
 
-		cout << "Please enter the second number: " << "\n";
-		num2 = get_valid_input();
+			if (Is_quit(operation))
+			{
+				handle_quit();
+			}
+			else if (Is_reset(operation))
+			{
+				handle_reset();
+				break;
+			}
 
-		if (Is_quit(num1, num2, operation))
-		{
-			handle_quit();
+			cout << "Please enter the second number: " << "\n";
+			num2 = get_valid_input();
+
+			handle_cal(num1, num2, operation, result);
+			first_cal = false;
+			break;
 		}
-
-		first_cal = false;
-		handle_cal(num1, num2, operation, result);
 	}
 
 	return 0;
